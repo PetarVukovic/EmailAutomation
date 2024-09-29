@@ -21,3 +21,7 @@ export interface Draft {
   content: string;
   isRead: boolean;
 }
+
+export const ItemTypes = {
+  AGENT: 'AGENT',
+};

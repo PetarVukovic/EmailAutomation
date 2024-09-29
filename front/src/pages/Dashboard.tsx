@@ -5,9 +5,11 @@ import Sidebar from '../components/Sidebar';
 import AgentModal from '../components/AgentModal';
 import DraftModal from '../components/DraftModal';
 import SettingsModal from '../components/SettingsModal';
-import { useToast } from '@chakra-ui/react';
-import { User, Agent, Draft } from '../types';
+import { Button, useToast } from '@chakra-ui/react';
+import { User, Agent, Draft, ItemTypes } from '../types';
 import Confetti from 'react-confetti';
+import { useDrop } from 'react-dnd';
+import DraggableAgent from '../components/DraggableAgent';
 
 interface DashboardProps {
   user: User;
@@ -78,10 +80,29 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
       draft.id === updatedDraft.id ? updatedDraft : draft
     );
     setDrafts(updatedDrafts);
-    // toast notification can be omitted if not necessary
   };
 
   const unreadDraftsCount = drafts.filter((draft) => !draft.isRead).length;
+
+  // Drag and Drop setup
+  const [{ isOver }, drop] = useDrop({
+    accept: ItemTypes.AGENT,
+    drop: (item: Agent) => {
+      setMainAgent(item);
+      setShowCelebration(true);
+      setTimeout(() => setShowCelebration(false), 5000);
+      toast({
+        title: 'Automation Started',
+        description: `Email automation started with ${item.name}.`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  });
 
   const renderMainContent = () => {
     switch (activeView) {
@@ -89,68 +110,69 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         return (
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-4">Agents</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {agents.map((agent) => (
-                <div
-                  key={agent.id}
-                  className={`bg-white p-4 rounded-lg shadow cursor-pointer hover:shadow-md transition-shadow ${
-                    mainAgent?.id === agent.id ? 'border-2 border-blue-500' : ''
-                  }`}
-                  onClick={() => {
-                    setSelectedAgent(agent);
-                    // setIsAgentModalOpen(true);
-                  }}
-                >
-                  <h3 className="font-semibold">{agent.name}</h3>
-                  <div className="mt-2">
-                    {agent.pdfs.map((pdf, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center text-sm text-gray-600"
-                      >
-                        {pdf}
-                      </div>
-                    ))}
+            <div className="flex flex-col md:flex-row">
+              {/* Agents List */}
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {agents.map((agent) => (
+                  <div
+                    key={agent.id}
+                    className={`bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow ${
+                      mainAgent?.id === agent.id ? 'border-2 border-blue-500' : ''
+                    }`}
+                  >
+                    <h3 className="font-semibold">{agent.name}</h3>
+                    <div className="mt-2">
+                      {agent.pdfs.map((pdf, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center text-sm text-gray-600"
+                        >
+                          {pdf}
+                        </div>
+                      ))}
+                    </div>
+                    {/* Draggable agent */}
+                    <div className="mt-4">
+                      <DraggableAgent agent={agent} />
+                    </div>
                   </div>
-                  <div className="mt-4 flex justify-between items-center">
+                ))}
+              </div>
+              {/* Drop area for automation */}
+              <div
+                ref={drop}
+                className={`w-full md:w-1/3 h-64 mt-4 md:mt-0 md:ml-4 p-4 rounded-lg border-2 border-dashed ${
+                  isOver ? 'border-green-500 bg-green-50' : 'border-gray-300'
+                } flex flex-col items-center justify-center`}
+              >
+                <p className="text-gray-700 mb-2">
+                  Drag and drop an agent here to start automation
+                </p>
+                {mainAgent && (
+                  <div className="text-center">
+                    <h3 className="font-semibold">
+                      Current Main Agent: {mainAgent.name}
+                    </h3>
                     <Button
-                      size="sm"
-                      colorScheme="teal"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setMainAgent(agent);
-                        toast({
-                          title: 'Main Agent Set',
-                          description: `${agent.name} is now your main agent.`,
-                          status: 'info',
-                          duration: 3000,
-                          isClosable: true,
-                        });
-                      }}
-                    >
-                      Set as Main
-                    </Button>
-                    <Button
-                      size="sm"
                       colorScheme="blue"
-                      onClick={(e) => {
-                        e.stopPropagation();
+                      mt={2}
+                      onClick={() => {
                         setShowCelebration(true);
                         setTimeout(() => setShowCelebration(false), 5000);
                         toast({
                           title: 'Automation Started',
-                          description: `Email automation started with ${agent.name}.`,
+                          description: `Email automation started with ${mainAgent.name}.`,
                           status: 'success',
                           duration: 3000,
                           isClosable: true,
                         });
                       }}
                     >
-                      Run Email Automation
+                      Start Automation
                     </Button>
                   </div>
-                </div>
-              ))}
+                )}
+              </div>
             </div>
             {showCelebration && <Confetti />}
           </div>
