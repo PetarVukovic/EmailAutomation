@@ -14,6 +14,8 @@ import {
   FormLabel,
   Input,
   Textarea,
+  useToast,
+  VStack,
 } from '@chakra-ui/react';
 import { Agent } from '../types';
 
@@ -37,6 +39,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
   const [agentName, setAgentName] = useState<string>('');
   const [agentPrompt, setAgentPrompt] = useState<string>('');
   const [agentPdf, setAgentPdf] = useState<File | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     if (selectedAgent) {
@@ -50,8 +53,19 @@ const AgentModal: React.FC<AgentModalProps> = ({
   }, [selectedAgent]);
 
   const handleSave = () => {
+    if (!agentName.trim()) {
+      toast({
+        title: 'Greška',
+        description: 'Molimo unesite ime agenta.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     if (selectedAgent) {
-      // Update existing agent
+      // Ažuriraj postojećeg agenta
       const updatedAgent: Agent = {
         ...selectedAgent,
         name: agentName,
@@ -62,8 +76,15 @@ const AgentModal: React.FC<AgentModalProps> = ({
       };
       handleUpdateAgent(updatedAgent);
       setSelectedAgent(null);
+      toast({
+        title: 'Agent ažuriran',
+        description: `${agentName} je uspješno ažuriran.`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     } else {
-      // Create new agent
+      // Kreiraj novog agenta
       const newAgent: Agent = {
         id: Date.now(),
         name: agentName,
@@ -71,6 +92,13 @@ const AgentModal: React.FC<AgentModalProps> = ({
         pdfs: agentPdf ? [agentPdf.name] : [],
       };
       handleCreateAgent(newAgent);
+      toast({
+        title: 'Agent kreiran',
+        description: `${agentName} je uspješno kreiran.`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     }
     onClose();
   };
@@ -87,17 +115,17 @@ const AgentModal: React.FC<AgentModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {selectedAgent ? 'Edit Agent' : 'Create New Agent'}
+          {selectedAgent ? 'Uredi agenta' : 'Kreiraj novog agenta'}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <div className="space-y-4">
-            <FormControl>
-              <FormLabel>Agent Name</FormLabel>
+          <VStack spacing={4} align="stretch">
+            <FormControl isRequired>
+              <FormLabel>Ime agenta</FormLabel>
               <Input
                 value={agentName}
                 onChange={(e) => setAgentName(e.target.value)}
-                placeholder="Enter agent name"
+                placeholder="Unesite ime agenta"
               />
             </FormControl>
             <FormControl>
@@ -105,11 +133,11 @@ const AgentModal: React.FC<AgentModalProps> = ({
               <Textarea
                 value={agentPrompt}
                 onChange={(e) => setAgentPrompt(e.target.value)}
-                placeholder="Enter agent prompt"
+                placeholder="Unesite prompt agenta"
               />
             </FormControl>
             <FormControl>
-              <FormLabel>Upload PDF</FormLabel>
+              <FormLabel>Učitaj PDF</FormLabel>
               <Input
                 type="file"
                 accept=".pdf"
@@ -120,11 +148,16 @@ const AgentModal: React.FC<AgentModalProps> = ({
                 }}
               />
             </FormControl>
-          </div>
+            {agentPdf && (
+              <text>
+                {agentPdf.name} odabran.
+              </text>
+            )}
+          </VStack>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleSave}>
-            {selectedAgent ? 'Update Agent' : 'Create Agent'}
+            {selectedAgent ? 'Ažuriraj agenta' : 'Kreiraj agenta'}
           </Button>
           <Button
             variant="ghost"
@@ -133,7 +166,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
               setSelectedAgent(null);
             }}
           >
-            Cancel
+            Odustani
           </Button>
         </ModalFooter>
       </ModalContent>

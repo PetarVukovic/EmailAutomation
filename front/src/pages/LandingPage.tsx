@@ -22,7 +22,7 @@ interface LandingPageProps {
 
 // Simulated user database
 const users: User[] = [
-  { email: 'test7@gmail.com', password: 'test', name: 'Test User' },
+  { email: 'test@2', password: 'test', name: 'Test User' },
   { email: 'user@example.com', password: 'password', name: 'Example User' },
 ];
 
