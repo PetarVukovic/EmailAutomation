@@ -13,14 +13,17 @@ export interface Agent {
   pdfs: string[];
 }
 
+// src/types.ts
+
 export interface Draft {
   id: number;
   title: string;
-  agent: string;
   recipient: string;
   content: string;
-  isRead: boolean;
 }
+
+// ... other type definitions
+
 
 export const ItemTypes = {
   AGENT: 'AGENT',

@@ -54,48 +54,46 @@ const DraftModal: React.FC<DraftModalProps> = ({
         <ModalHeader>Edit Draft</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <div className="space-y-4">
-            <FormControl>
-              <FormLabel>Title</FormLabel>
-              <Input
-                value={selectedDraft?.title || ''}
-                onChange={(e) =>
-                  setSelectedDraft(
-                    selectedDraft
-                      ? { ...selectedDraft, title: e.target.value }
-                      : null
-                  )
-                }
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Recipient</FormLabel>
-              <Input
-                value={selectedDraft?.recipient || ''}
-                onChange={(e) =>
-                  setSelectedDraft(
-                    selectedDraft
-                      ? { ...selectedDraft, recipient: e.target.value }
-                      : null
-                  )
-                }
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Content</FormLabel>
-              <Textarea
-                value={selectedDraft?.content || ''}
-                onChange={(e) =>
-                  setSelectedDraft(
-                    selectedDraft
-                      ? { ...selectedDraft, content: e.target.value }
-                      : null
-                  )
-                }
-                rows={6}
-              />
-            </FormControl>
-          </div>
+          <FormControl mb={4}>
+            <FormLabel>Title</FormLabel>
+            <Input
+              value={selectedDraft?.title || ''}
+              onChange={(e) =>
+                setSelectedDraft(
+                  selectedDraft
+                    ? { ...selectedDraft, title: e.target.value }
+                    : null
+                )
+              }
+            />
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>Recipient</FormLabel>
+            <Input
+              value={selectedDraft?.recipient || ''}
+              onChange={(e) =>
+                setSelectedDraft(
+                  selectedDraft
+                    ? { ...selectedDraft, recipient: e.target.value }
+                    : null
+                )
+              }
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Content</FormLabel>
+            <Textarea
+              value={selectedDraft?.content || ''}
+              onChange={(e) =>
+                setSelectedDraft(
+                  selectedDraft
+                    ? { ...selectedDraft, content: e.target.value }
+                    : null
+                )
+              }
+              rows={6}
+            />
+          </FormControl>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleSave}>
