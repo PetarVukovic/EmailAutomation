@@ -6,6 +6,7 @@ import gearAnimationData from '../animations/gear-animation.json';
 
 interface GearAnimationProps {
     isSpinning: boolean;
+    size?: number;
 }
 
 const GearAnimation: React.FC<GearAnimationProps> = ({ isSpinning }) => {
@@ -22,7 +23,7 @@ const GearAnimation: React.FC<GearAnimationProps> = ({ isSpinning }) => {
     }, [isSpinning]);
 
     return (
-        <div style={{ width: '300px', height: '300px' }}>
+        <div style={{ width: '390px', height: '390px' }}>
             <Lottie
                 lottieRef={lottieRef}
                 animationData={gearAnimationData}
