@@ -1,38 +1,30 @@
 // src/components/RocketAnimation.tsx
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import Lottie from 'lottie-react';
 import rocketAnimationData from '../animations/rocket-launcher.json';
 
 interface RocketAnimationProps {
     onAnimationComplete: () => void;
+    size?: number; // Opcionalni prop za veličinu
 }
 
-const RocketAnimation: React.FC<RocketAnimationProps> = ({ onAnimationComplete }) => {
-    useEffect(() => {
-        const timer = setTimeout(onAnimationComplete, 5000); // Trajanje animacije
-        return () => clearTimeout(timer);
-    }, [onAnimationComplete]);
-
+const RocketAnimation: React.FC<RocketAnimationProps> = ({ onAnimationComplete, size = 300 }) => {
     return (
         <div
             style={{
-                position: 'fixed', // Fiksirano preko cijelog prozora
-                top: 0,
-                left: 0,
                 width: '100%',
                 height: '100%',
-                zIndex: 1000,
-                pointerEvents: 'none', // Omogućuje interakciju s pozadinskim elementima
                 display: 'flex',
-                alignItems: 'flex-end', // Početak animacije od dna
-                justifyContent: 'center',
+                alignItems: 'center', // Centrirano vertikalno
+                justifyContent: 'center', // Centrirano horizontalno
             }}
         >
             <Lottie
                 animationData={rocketAnimationData}
                 loop={false}
-                style={{ width: '300px', height: '600px' }}
+                style={{ width: size, height: size }}
+                onComplete={onAnimationComplete} // Koristimo onComplete prop
             />
         </div>
     );

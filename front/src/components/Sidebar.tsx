@@ -1,4 +1,17 @@
+// Sidebar.tsx
+
 import React from 'react';
+import {
+  Box,
+  IconButton,
+  Text,
+  Badge,
+  useColorModeValue,
+  Flex,
+  VStack,
+  Divider,
+  Button,
+} from '@chakra-ui/react';
 import {
   User as UserIcon,
   Plus,
@@ -9,7 +22,6 @@ import {
   ChevronRight,
   File,
 } from 'lucide-react';
-import { Divider, Badge } from '@chakra-ui/react';
 import { User, Agent } from '../types';
 
 interface SidebarProps {
@@ -39,112 +51,165 @@ const Sidebar: React.FC<SidebarProps> = ({
   setSidebarOpen,
   unreadDraftsCount,
 }) => {
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const textColor = useColorModeValue('gray.700', 'gray.200');
+  const hoverBgColor = useColorModeValue('gray.100', 'gray.700');
+  const activeBgColor = useColorModeValue('gray.200', 'gray.600');
+  const borderColor = useColorModeValue('orange.300', 'orange.600'); // Light orange color
+  const borderRadius = 'lg';
+  const sidebarWidth = sidebarOpen ? '300px' : '100px'; // Increased width
+  const fontSize = 'lg'; // Increased font size
+
   return (
-    <div
-      className={`${sidebarOpen ? 'w-80' : 'w-28'
-        } bg-white shadow-md transition-all duration-300`} // Increased width
+    <Box
+      width={sidebarWidth}
+      bg={bgColor}
+      borderWidth="2px"
+      borderColor={borderColor}
+      borderRadius={borderRadius}
+      transition="width 0.3s"
+      overflow="hidden"
+      m={4} // Margins around the sidebar
     >
-      <div className="flex items-center justify-between p-6 border-b">
+      <Flex
+        align="center"
+        justify="space-between"
+        p={4}
+        borderBottomWidth="1px"
+        borderColor={borderColor}
+      >
         {sidebarOpen && (
-          <div>
-            <h1 className="text-2xl font-bold">AI Email Assistant</h1> {/* Increased font size */}
-            <p className="text-lg text-gray-600 mt-1">
+          <Box>
+            <Text fontSize="2xl" fontWeight="bold">
+              AI Email Assistant
+            </Text>
+            <Text fontSize="lg" color={textColor}>
               Welcome, {user.name || user.email}
-            </p>
-          </div>
+            </Text>
+          </Box>
         )}
-        <button
-          className="p-3 rounded hover:bg-gray-200 transition"
+        <IconButton
+          aria-label="Toggle sidebar"
+          icon={sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
           onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          {sidebarOpen ? (
-            <ChevronLeft className="w-6 h-6" />
-          ) : (
-            <ChevronRight className="w-6 h-6" />
-          )}
-        </button>
-      </div>
-      <nav className="mt-6">
-        <button
-          className={`flex items-center ${sidebarOpen ? 'space-x-3' : 'justify-center'
-            } w-full px-6 py-3 text-left hover:bg-gray-200 transition ${activeView === 'agents' ? 'bg-gray-200 font-semibold' : ''
-            }`} // Increased padding
+          variant="ghost"
+          size="lg"
+        />
+      </Flex>
+      <VStack align="stretch" spacing={1}>
+        <Button
+          variant="ghost"
+          justifyContent={sidebarOpen ? 'flex-start' : 'center'}
+          leftIcon={<UserIcon size={24} />}
           onClick={() => setActiveView('agents')}
+          fontWeight={activeView === 'agents' ? 'bold' : 'normal'}
+          bg={activeView === 'agents' ? activeBgColor : 'transparent'}
+          _hover={{ bg: hoverBgColor }}
+          pl={sidebarOpen ? 4 : 0}
+          fontSize={fontSize}
+          height="60px"
         >
-          <UserIcon className="w-6 h-6" />  {/* Increased icon size */}
-          {sidebarOpen && <span className="text-lg">Agents</span>}  {/* Increased font size */}
-        </button>
+          {sidebarOpen && 'Agents'}
+        </Button>
         {sidebarOpen && (
-          <div className="px-6 py-3">
-            <p className="text-sm text-gray-500 uppercase">Your Agents</p>
-          </div>
+          <Box pl={4} pt={2} pb={2}>
+            <Text fontSize="md" color={textColor} textTransform="uppercase">
+              Your Agents
+            </Text>
+          </Box>
         )}
         {agents.map((agent) => (
-          <button
+          <Button
             key={agent.id}
-            className={`flex items-center ${sidebarOpen ? 'space-x-3' : 'justify-center'
-              } w-full px-6 py-3 text-left text-lg text-gray-700 hover:bg-gray-200 transition`} // Increased padding and font size
+            variant="ghost"
+            justifyContent={sidebarOpen ? 'flex-start' : 'center'}
+            leftIcon={<File size={20} />}
             onClick={() => {
               setSelectedAgent(agent);
               setIsAgentModalOpen(true);
             }}
+            pl={sidebarOpen ? 8 : 0}
+            _hover={{ bg: hoverBgColor }}
+            fontSize={fontSize}
+            height="50px"
           >
-            <File className="w-5 h-5" />  {/* Keep icon size consistent */}
-            {sidebarOpen && <span>{agent.name}</span>}
-          </button>
+            {sidebarOpen && agent.name}
+          </Button>
         ))}
-        <button
-          className={`flex items-center ${sidebarOpen ? 'space-x-3' : 'justify-center'
-            } w-full px-6 py-3 text-left text-lg text-blue-600 hover:bg-blue-50 transition`}  // Increased padding and font size
+        <Button
+          variant="ghost"
+          justifyContent={sidebarOpen ? 'flex-start' : 'center'}
+          leftIcon={<Plus size={20} />}
           onClick={() => {
             setSelectedAgent(null);
             setIsAgentModalOpen(true);
           }}
+          pl={sidebarOpen ? 8 : 0}
+          colorScheme="blue"
+          _hover={{ bg: hoverBgColor }}
+          fontSize={fontSize}
+          height="50px"
         >
-          <Plus className="w-6 h-6" />  {/* Increased icon size */}
-          {sidebarOpen && <span>New Agent</span>}
-        </button>
-        <Divider my={6} />
-        <button
-          className={`flex items-center ${sidebarOpen ? 'space-x-3' : 'justify-center'
-            } w-full px-6 py-3 text-left hover:bg-gray-200 transition ${activeView === 'drafts' ? 'bg-gray-200 font-semibold' : ''
-            }`}  // Increased padding and font size
+          {sidebarOpen && 'New Agent'}
+        </Button>
+        <Divider my={4} borderColor={borderColor} />
+        <Button
+          variant="ghost"
+          justifyContent={sidebarOpen ? 'flex-start' : 'center'}
+          leftIcon={
+            <Box position="relative">
+              <FileText size={24} />
+              {unreadDraftsCount > 0 && (
+                <Badge
+                  colorScheme="red"
+                  variant="solid"
+                  position="absolute"
+                  top="-1"
+                  right="-1"
+                  borderRadius="full"
+                >
+                  {unreadDraftsCount}
+                </Badge>
+              )}
+            </Box>
+          }
           onClick={() => setActiveView('drafts')}
+          fontWeight={activeView === 'drafts' ? 'bold' : 'normal'}
+          bg={activeView === 'drafts' ? activeBgColor : 'transparent'}
+          _hover={{ bg: hoverBgColor }}
+          pl={sidebarOpen ? 4 : 0}
+          fontSize={fontSize}
+          height="60px"
         >
-          <div className="relative">
-            <FileText className="w-6 h-6" />  {/* Increased icon size */}
-            {unreadDraftsCount > 0 && (
-              <Badge
-                colorScheme="red"
-                variant="solid"
-                className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2"
-                borderRadius="full"
-              >
-                {unreadDraftsCount}
-              </Badge>
-            )}
-          </div>
-          {sidebarOpen && <span className="text-lg">Drafts</span>}  {/* Increased font size */}
-        </button>
-        <Divider my={6} />
-        <button
-          className={`flex items-center ${sidebarOpen ? 'space-x-3' : 'justify-center'
-            } w-full px-6 py-3 text-left hover:bg-gray-200 transition`}  // Increased padding
+          {sidebarOpen && 'Drafts'}
+        </Button>
+        <Divider my={4} borderColor={borderColor} />
+        <Button
+          variant="ghost"
+          justifyContent={sidebarOpen ? 'flex-start' : 'center'}
+          leftIcon={<Settings size={24} />}
           onClick={() => setIsSettingsOpen(true)}
+          _hover={{ bg: hoverBgColor }}
+          pl={sidebarOpen ? 4 : 0}
+          fontSize={fontSize}
+          height="60px"
         >
-          <Settings className="w-6 h-6" />  {/* Increased icon size */}
-          {sidebarOpen && <span className="text-lg">Settings</span>}  {/* Increased font size */}
-        </button>
-        <button
-          className={`flex items-center ${sidebarOpen ? 'space-x-3' : 'justify-center'
-            } w-full px-6 py-3 text-left hover:bg-gray-200 transition`}  // Increased padding
+          {sidebarOpen && 'Settings'}
+        </Button>
+        <Button
+          variant="ghost"
+          justifyContent={sidebarOpen ? 'flex-start' : 'center'}
+          leftIcon={<LogOut size={24} />}
           onClick={onLogout}
+          _hover={{ bg: hoverBgColor }}
+          pl={sidebarOpen ? 4 : 0}
+          fontSize={fontSize}
+          height="60px"
         >
-          <LogOut className="w-6 h-6" />  {/* Increased icon size */}
-          {sidebarOpen && <span className="text-lg">Logout</span>}  {/* Increased font size */}
-        </button>
-      </nav>
-    </div>
+          {sidebarOpen && 'Logout'}
+        </Button>
+      </VStack>
+    </Box>
   );
 };
 

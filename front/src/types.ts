@@ -17,10 +17,13 @@ export interface Agent {
 
 export interface Draft {
   id: number;
-  title: string;
+  sender: string;
   recipient: string;
+  subject: string;
   content: string;
+  unread: boolean;
 }
+
 
 // ... other type definitions
 
